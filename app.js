@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const sqlite3 = require('sqlite3');
+const sqlite = require('sqlite3');
 const { open } = require('sqlite');
 app.use(express.json());
 const dbPath = path.join(__dirname, 'covid19India.db');
