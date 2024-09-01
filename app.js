@@ -52,7 +52,7 @@ const initializeDBAndServer = async () => {
 initializeDBAndServer()
 
 //Returns a list of all states in the state table
-app.get('states/', async (request, response) => {
+app.get( '/states/', async (request, response) => {
   const allStatesList = ` 
   SELECT *
   FROM state  
@@ -98,42 +98,36 @@ app.post('/districts/', async (request, response) => {
 })
 
 //Returns a district  based on district Id
-app.get('/districts/:districtId/', async (request, response) => {
-  const {districtId} = request.params
+app.get("/districts/:districtId/", async (request, response) => {
+  const { districtId } = request.params;
   const getDistrict = `
         SELECT *
-       FROM 
-       WHERE district_id = ${districtId};`
-  const newDistrict = await db.get(getDistrict)
-  const districtResult = districtSnakeToCamel(newDistrict)
-  response.send(districtResult)
-})
+       FROM   district 
+       WHERE district_id = ${districtId};`;
+  const newDistrict = await db.get(getDistrict);
+  const districtResult = districtSnakeToCamel(newDistrict);
+  response.send(districtResult);
+});
+
 
 //Deletes a district from the district table based on the district ID
-app.delete('/districts/:districtId/', async (request, response) => {
-  const {districtId} = request.params
+app.delete("/districts/:districtId/", async (request, response) => {
+  const { districtId } = request.params;
   const deleteDistrict = `
   DELETE 
   FROM district 
-  WHERE district_id = ${districId}; // districtId
-  `
-  await db.run(removeDistrict)
-  response.send('District Removed')
-})
+  WHERE district_id = ${districtId}; // districtId
+  `;
+  await db.run(deleteDistrict);
+  response.send("District Removed");
+});
 
 //Update the details of a specific district based on the district ID
 
- app.put("/districts/:districtId/", async (request, response) => {
-  const { districtId } = request.params;
-  const districtDetails = request.body;
-  const {
-    districtName,
-    stateId,
-    cases,
-    cured,
-    active,
-    deaths,
-  } = districtDetails;
+app.put('/districts/:districtId/', async (request, response) => {
+  const {districtId} = request.params
+  const districtDetails = request.body
+  const {districtName, stateId, cases, cured, active, deaths} = districtDetails
   const updateDistrict = ` 
         UPDATE
            district
@@ -145,10 +139,10 @@ app.delete('/districts/:districtId/', async (request, response) => {
             active = '${active}',
             deaths = ${deaths}
     WHERE district_id = ${districtId};
-`;
-  await db.run(updateDistrict);
-  response.send("District Details Updated");
-});
+`
+  await db.run(updateDistrict)
+  response.send('District Details Updated')
+})
 
 //Returns a State Report
 app.get('/states/:stateId/stats/', async (request, response) => {
