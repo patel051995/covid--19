@@ -7,13 +7,13 @@ app.use(express.json())
 const dbPath = path.join(__dirname, 'covid19India.db')
 let db = null
 
-const objectSnakeToCamel = newObject => {
+const objectSnakeToCamel = (newObject) => {
   return {
-    stateID: newObject.state_id,
+    stateId: newObject.state_id, //updated here
     stateName: newObject.state_name,
     population: newObject.population,
-  }
-}
+  };
+};
 
 const districtSnakeToCamel = newObject => {
   return {
@@ -52,12 +52,12 @@ const initializeDBAndServer = async () => {
 initializeDBAndServer()
 
 //Returns a list of all states in the state table
-app.get( '/states/', async (request, response) => {
+app.get('/states/', async (request, response) => {
   const allStatesList = ` 
   SELECT *
   FROM state  
-  ORDER BY state_id:`
-  const stateList = await db.all(StatesList)
+  ORDER BY state_id`
+  const stateList = await db.all(allStatesList)
   const statesResult = stateList.map(eachObject => {
     return objectSnakeToCamel(eachObject)
   })
@@ -65,17 +65,17 @@ app.get( '/states/', async (request, response) => {
 })
 
 //Returns a state based on the state ID
-app.get('/states/:stateId/', async (request, response) => {
-  const {stateId} = request.params
-  const getState = `
-        SELECT *
-        FROM state 
-        WHERE 
-        state_id = ${stateId};`
-  const newState = await db.get(getState)
-  const stateResult = objectSnakeToCamel(newState)
-  response.send(stateResult)
-})
+app.get("/states/", async (request, response) => {
+  const allStatesList = ` 
+  SELECT *
+  FROM state  
+  ORDER BY state_id`;
+  const stateList = await db.all(allStatesList);
+  const statesResult = stateList.map((eachObject) => {
+    return objectSnakeToCamel(eachObject);
+  });
+  response.send(statesResult);
+});
 
 //Create a district in the district table
 app.post('/districts/', async (request, response) => {
@@ -98,29 +98,28 @@ app.post('/districts/', async (request, response) => {
 })
 
 //Returns a district  based on district Id
-app.get("/districts/:districtId/", async (request, response) => {
-  const { districtId } = request.params;
+app.get('/districts/:districtId/', async (request, response) => {
+  const {districtId} = request.params
   const getDistrict = `
         SELECT *
        FROM   district 
-       WHERE district_id = ${districtId};`;
-  const newDistrict = await db.get(getDistrict);
-  const districtResult = districtSnakeToCamel(newDistrict);
-  response.send(districtResult);
-});
-
+       WHERE district_id = ${districtId};`
+  const newDistrict = await db.get(getDistrict)
+  const districtResult = districtSnakeToCamel(newDistrict)
+  response.send(districtResult)
+})
 
 //Deletes a district from the district table based on the district ID
-app.delete("/districts/:districtId/", async (request, response) => {
-  const { districtId } = request.params;
+app.delete('/districts/:districtId/', async (request, response) => {
+  const {districtId} = request.params
   const deleteDistrict = `
   DELETE 
   FROM district 
   WHERE district_id = ${districtId}; // districtId
-  `;
-  await db.run(deleteDistrict);
-  response.send("District Removed");
-});
+  `
+  await db.run(deleteDistrict)
+  response.send('District Removed')
+})
 
 //Update the details of a specific district based on the district ID
 
